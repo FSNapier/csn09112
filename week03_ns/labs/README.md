@@ -1,5 +1,6 @@
 <img src="https://github.com/billbuchanan/csn09112/blob/master/zadditional/top_csn09112.png"/>
-# Lab 2: Vyatta and Snort</h2>
+
+# Lab 2: Vyatta and Snort
 
 ## Aim
 The aim of this lab is to build on the basic Vyatta firewall configuration, adding firewalling, IDS, and other hardening capabilities.
@@ -51,15 +52,15 @@ Group Number:
 Draw your own network diagram here, by filling-in the blank boxes, with the allocated networks, subnets, and IP addresses:
 
 ![Lab](https://github.com/billbuchanan/csn09112/blob/master/zadditional/overview02.png)
-Figure 2: Your network setup (Note: Gateway address is 10.220.3.254)
+Figure 2: Your network setup (Note: Gateway address is 10.221.3.254)
 
 # B	Configure Router/Firewall for Remote Administration
 We typically don’t use the console terminal of a firewall for configuration. In the following we will enable one port on the firewall, and then configure it through a remote connection. First configure your Vyatta firewall networking with the following:
 
 ```
 $ configure
-# set interfaces ethernet eth1 address 172.16.x.254/24
-# set system gateway 10.246.3.254
+# set interfaces ethernet eth1 address 10.10.x.254/24
+# set system gateway 10.221.3.254
 ```
 
 and then start the Telnet server on the Vyatta firewall:
@@ -88,8 +89,8 @@ If everything is correct commit the changes, and review the configuration:
 Now setup your Ubuntu host for networking on the same private network, and so it will be able to connect to the Vyatta firewall using remote admin with the Telnet service:
 
 ```
-sudo ifconfig eth11 172.16.x.7 netmask 255.255.255.0 up 
-sudo route add default gw 172.16.x.254
+sudo ifconfig eth11 10.10.x.7 netmask 255.255.255.0 up 
+sudo route add default gw 10.10.x.254
 ```
 
 Now from Ubuntu, check the connectivity using ping to your local connection and the gateway:
@@ -103,28 +104,39 @@ First download the following config:
 
 http://asecuritysite.com/vpart01.txt
 
+or use:
+```
+wget http://52.20.40.123/vpart01.txt
+```
+
+or:
+```
+http://10.221.2.1/vpart01.txt
+```
+
+
 Note you need to use the VMRC console for copy-and-paste to work. Now edit the ‘x’ (Private) and ‘y’ (DMZ) values for your network:
 
 ```
 set interfaces ethernet eth0 address dhcp
-set interfaces ethernet eth1 address 172.16.x.254/24 
-set interfaces ethernet eth2 address 172.16.y.254/24 
-set system gateway 10.246.3.254
+set interfaces ethernet eth1 address 10.10.x.254/24 
+set interfaces ethernet eth2 address 10.10.y.254/24 
+set system gateway 10.221.3.254
 
 
 set nat source rule 1 outbound-interface eth0
-set nat source rule 1 source address 172.16.x.0/24 
+set nat source rule 1 source address 10.10.x.0/24 
 set nat source rule 1 translation address masquerade
 
 set nat source rule 2 outbound-interface eth0
-set nat source rule 2 source address 172.16.y.0/24 
+set nat source rule 2 source address 10.10.y.0/24 
 set nat source rule 2 translation address masquerade
 ```
 
-Now, from Ubuntu, create a Telnet connection to the default gateway on the firewall (172.16.x.254):
+Now, from Ubuntu, create a Telnet connection to the default gateway on the firewall (10.10.x.254):
 
 ```
-telnet 172.16.x.254
+telnet 10.10.x.254
 ```
 
  
@@ -291,7 +303,7 @@ configure
 set interfaces ethernet eth0 address dhcp
 set interfaces ethernet eth1 address 172.16.x.254/24 
 set interfaces ethernet eth2 address 172.16.y.254/24 
-set system gateway 10.246.3.254
+set system gateway 10.221.3.254
 
 set nat source rule 1 outbound-interface eth0
 set nat source rule 1 source address 172.16.x.0/24 
@@ -343,11 +355,15 @@ http://asecuritysite.com/vfinal.txt
 <h2>Lab setup</h2>
 <img src="https://github.com/billbuchanan/csn09112/blob/master/zadditional/overview.png"/>
 <h2>Quick guide</h2>
-<p>For Ubtunta configuration:</p>
+<p>For Ubtuntu configuration:</p>
 <pre>
-ip addr add 192.1.1.1 dev eth1
-route add default gw 192.168.1.254 eth0
-nano /etc/resolve.conf and change "name-server 10.200.3.354"
+ip addr add 10.10.10.7 dev eth1
+route add default gw 10.10.10.7 eth0
+</pre>
+Edit /etc/resolv.conf:
+<pre>
+nameserver 8.8.8.8
+nameserver 10.221.3.354
 </pre>
 
 
